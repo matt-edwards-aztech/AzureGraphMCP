@@ -1,0 +1,14 @@
+# Azure Resource Graph Multi-Transport MCP Server Dependencies
+
+# Web framework
+Flask>=2.3.0
+flask-cors>=4.0.0
+
+# HTTP client for Azure API calls
+requests>=2.31.0
+
+# Azure authentication
+azure-identity>=1.15.0
+
+# Optional: Azure CLI integration (for development)
+azure-cli-core>=2.50.0

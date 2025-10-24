@@ -1,0 +1,19 @@
+# Azure Resource Graph MCP Server Dependencies
+
+# MCP Python SDK
+mcp>=1.0.0
+
+# HTTP client for Azure API calls
+httpx>=0.27.0
+
+# Data validation and parsing
+pydantic>=2.5.0
+
+# Type hints support
+typing-extensions>=4.8.0
+
+# Optional: For enhanced Azure CLI integration
+azure-identity>=1.15.0
+
+# Optional: Enhanced Azure SDK support  
+azure-mgmt-resource>=23.0.0
