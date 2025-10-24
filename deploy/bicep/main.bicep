@@ -149,7 +149,7 @@ resource webAppConfig 'Microsoft.Web/sites/config@2023-01-01' = {
     windowsFxVersion: ''
     requestTracingEnabled: false
     remoteDebuggingEnabled: false
-    remoteDebuggingVersion: 'VS2019'
+    remoteDebuggingVersion: 'VS2022'
     httpLoggingEnabled: true
     acrUseManagedIdentityCreds: false
     acrUserManagedIdentityID: ''
