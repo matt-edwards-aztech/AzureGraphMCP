@@ -34,7 +34,13 @@ CHARACTER_LIMIT = 25000
 # Authentication functions
 async def get_access_token() -> str:
     """Get Azure AD access token for Resource Graph API."""
-    # Try environment variables first
+    # Try Managed Identity first (best for Azure App Service)
+    try:
+        return await get_managed_identity_token()
+    except Exception as e:
+        logger.info(f"Managed Identity not available: {e}")
+    
+    # Try environment variables (Service Principal)
     client_id = os.getenv("AZURE_CLIENT_ID")
     client_secret = os.getenv("AZURE_CLIENT_SECRET") 
     tenant_id = os.getenv("AZURE_TENANT_ID")
@@ -42,8 +48,40 @@ async def get_access_token() -> str:
     if all([client_id, client_secret, tenant_id]):
         return await get_service_principal_token(client_id, client_secret, tenant_id)
     
-    # Fall back to Azure CLI
+    # Fall back to Azure CLI (for local development)
     return await get_cli_token()
+
+async def get_managed_identity_token() -> str:
+    """Get token using Azure Managed Identity (IMDS)."""
+    # Azure Instance Metadata Service (IMDS) endpoint
+    identity_endpoint = "http://169.254.169.254/metadata/identity/oauth2/token"
+    
+    headers = {
+        "Metadata": "true"
+    }
+    
+    params = {
+        "api-version": "2018-02-01",
+        "resource": "https://management.azure.com/"
+    }
+    
+    # Use client ID if specified for user-assigned managed identity
+    client_id = os.getenv("AZURE_CLIENT_ID")
+    if client_id:
+        params["client_id"] = client_id
+    
+    try:
+        response = requests.get(
+            identity_endpoint,
+            headers=headers,
+            params=params,
+            timeout=10
+        )
+        response.raise_for_status()
+        token_data = response.json()
+        return token_data["access_token"]
+    except Exception as e:
+        raise ValueError(f"Failed to get Managed Identity token: {e}")
 
 async def get_service_principal_token(client_id: str, client_secret: str, tenant_id: str) -> str:
     """Get token using service principal credentials."""
